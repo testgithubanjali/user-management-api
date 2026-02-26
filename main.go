@@ -70,4 +70,20 @@ func main(){
 			"error": "user not found",
 		})
 	})
+	router.DELETE("/users/:id",  func(c * gin.Context){
+		idParam := c.Param("id")
+		id,_ := strconv.Atoi(idParam)
+		for i, user := range users{
+			if user.ID == id{
+				users = append(users[:i], users[i+1:]...)
+				c.JSON(http.StatusOK, gin.H{
+					"message": "user deleted",
+				})
+				return
+			}
+		}
+		c.JSON(http.StatusNotFound,gin.H{
+			"error": "user not found",
+		})
+	})
 }
