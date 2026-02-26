@@ -46,4 +46,28 @@ func main(){
 		})
 
 	})
+	router.PUT("/users/:id", func(c *gin.Context){
+		idParam := c.Param("id")
+		id,_ := strconv.Atoi(idParam)
+
+		var updatedUser user
+		if err := c.BindJSON(&updatedUser); err != nil{
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "invalid input",
+			
+			})
+			return
+		}
+		for i, user := range users{
+			if user.ID == id{
+				users[i].Name = updatedUser.Name
+				users[i].Age = updatedUser.Age
+				c.JSON(http.StatusOK, users[i])
+				return
+			}
+		}
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "user not found",
+		})
+	})
 }
