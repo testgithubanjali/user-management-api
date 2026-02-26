@@ -30,4 +30,20 @@ func main(){
 	router.GET("/users", func(c *gin.Context){
 		c.JSON(http.StatusOK,users)
 	})
+	router.GET("/users/:id",func(c *gin.Context){
+		idParam:= c.Param("id")
+		id,_ := strconv.Atoi(idParam)
+		for _, user := range users{
+			if user.ID ==id{
+				c.JSON(http.StatusOK,user)
+				return
+		
+			}
+			
+		}
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "user not found",
+		})
+
+	})
 }
