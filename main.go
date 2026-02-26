@@ -27,4 +27,7 @@ func main(){
 		users=append(users,newUser)
 		c.JSON(http.StatusOK, newUser)
 	})
+	router.GET("/users", func(c *gin.Context){
+		c.JSON(http.StatusOK,users)
+	})
 }
