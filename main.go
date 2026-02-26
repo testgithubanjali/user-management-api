@@ -1,89 +1,15 @@
 package main
 
-import(
-	"net/http"
+import (
 	"github.com/gin-gonic/gin"
-	"strconv"
+	"user-management-api/routes"
 )
-type user struct{
-	ID int `json:"id"`
-	Name string `json:"name"`
-	Age int `json:"age"`
-}
-var users= []user{}
-var idCounter = 1
-func main(){
-	router:= gin.Default()
-	router.POST("/users", func(c *gin.Context) {
-		var newUser user
-		if err:= c.BindJSON(&newUser); err !=nil{
-			c.JSON(http.StatusBadRequest, gin.H{
-				"errror": "invalid input",
-			})
-			return
-		}
-		newUser.ID = idCounter
-		idCounter++
-		users=append(users,newUser)
-		c.JSON(http.StatusOK, newUser)
-	})
-	router.GET("/users", func(c *gin.Context){
-		c.JSON(http.StatusOK,users)
-	})
-	router.GET("/users/:id",func(c *gin.Context){
-		idParam:= c.Param("id")
-		id,_ := strconv.Atoi(idParam)
-		for _, user := range users{
-			if user.ID ==id{
-				c.JSON(http.StatusOK,user)
-				return
-		
-			}
-			
-		}
-		c.JSON(http.StatusNotFound, gin.H{
-			"error": "user not found",
-		})
 
-	})
-	router.PUT("/users/:id", func(c *gin.Context){
-		idParam := c.Param("id")
-		id,_ := strconv.Atoi(idParam)
+func main() {
 
-		var updatedUser user
-		if err := c.BindJSON(&updatedUser); err != nil{
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "invalid input",
-			
-			})
-			return
-		}
-		for i, user := range users{
-			if user.ID == id{
-				users[i].Name = updatedUser.Name
-				users[i].Age = updatedUser.Age
-				c.JSON(http.StatusOK, users[i])
-				return
-			}
-		}
-		c.JSON(http.StatusNotFound, gin.H{
-			"error": "user not found",
-		})
-	})
-	router.DELETE("/users/:id",  func(c * gin.Context){
-		idParam := c.Param("id")
-		id,_ := strconv.Atoi(idParam)
-		for i, user := range users{
-			if user.ID == id{
-				users = append(users[:i], users[i+1:]...)
-				c.JSON(http.StatusOK, gin.H{
-					"message": "user deleted",
-				})
-				return
-			}
-		}
-		c.JSON(http.StatusNotFound,gin.H{
-			"error": "user not found",
-		})
-	})
+	router := gin.Default()
+
+	routes.UserRoutes(router)
+
+	router.Run(":8080")
 }
