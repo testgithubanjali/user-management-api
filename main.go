@@ -1,0 +1,30 @@
+package main
+
+import(
+	"net/http"
+	"github.com/gin-gonic/gin"
+	"strconv"
+)
+type user struct{
+	ID int `json:"id"`
+	Name string `json:"name"`
+	Age int `json:"age"`
+}
+var users= []user{}
+var idCounter = 1
+func main(){
+	router:= gin.Default()
+	router.POST("/users", func(c *gin.Context) {
+		var newUser user
+		if err:= c.BindJSON(&newUser); err !=nil{
+			c.JSON(http.StatusBadRequest, gin.H{
+				"errror": "invalid input",
+			})
+			return
+		}
+		newUser.ID = idCounter
+		idCounter++
+		users=append(users,newUser)
+		c.JSON(http.StatusOK, newUser)
+	})
+}
