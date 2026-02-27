@@ -1,19 +1,18 @@
 package structs
 
-// Full user stored in system
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type User struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-	Age  int    `json:"age"`
+	ID   primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Name string             `bson:"name" json:"name"`
+	Age  int                `bson:"age" json:"age"`
 }
 
-// Payload for creating user
 type CreateUserPayload struct {
 	Name string `json:"name"`
 	Age  int    `json:"age"`
 }
 
-// Payload for updating user
 type UpdateUserPayload struct {
 	Name string `json:"name"`
 	Age  int    `json:"age"`
