@@ -31,5 +31,5 @@ func ConnectDB() {
 
 	DB = client.Database("userdb")
 
-	log.Println("MongoDB Connected Successfully 🚀")
+	log.Println("MongoDB Connected Successfully")
 }
