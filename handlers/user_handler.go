@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 	"time"
-
+     "log"
 	"user-management-api/database"
 	"user-management-api/structs"
 
@@ -48,9 +48,9 @@ func CreateUser(c *gin.Context) {
 	})
 }
 
-// GET ALL USERS
 func GetAllUsers(c *gin.Context) {
 
+	log.Println("GetAllUsers called")
 	collection := database.DB.Collection("users")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -65,18 +65,22 @@ func GetAllUsers(c *gin.Context) {
 	}
 	defer cursor.Close(ctx)
 
-	var users []structs.User
+	// IMPORTANT: Initialize empty slice
+	users := make([]structs.User, 0)
 
-	if err = cursor.All(ctx, &users); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Error decoding users",
-		})
-		return
+	for cursor.Next(ctx) {
+		var user structs.User
+		if err := cursor.Decode(&user); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "Decode error",
+			})
+			return
+		}
+		users = append(users, user)
 	}
 
 	c.JSON(http.StatusOK, users)
 }
-
 // GET USER BY ID
 func GetUserByID(c *gin.Context) {
 
@@ -95,7 +99,7 @@ func GetUserByID(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var user structs.User
+	user := []structs.User{} 
 
 	err = collection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&user)
 	if err != nil {
